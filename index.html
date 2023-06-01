@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Пример страницы с использованием XPath</title>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Функция для выполнения запроса XPath и обновления содержимого блоков
+      function updateBlocks() {
+        // Выполняем запрос XPath для блока 1
+        fetch('https://my-calend.ru/magnitnye-buri/moscow') // Здесь указываете URL первой страницы
+          .then(response => response.text())
+          .then(data => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, 'text/html');
+            const block1Data = doc.evaluate("/html/body/div[1]/main/div[1]/article/div[12]", doc, null, XPathResult.STRING_TYPE, null);
+            document.getElementById('block1Data').textContent = block1Data.stringValue;
+          });
+
+        // Выполняем запрос XPath для блока 2
+        fetch('https://tesis.xras.ru/magnetic_storms.html') // Здесь указываете URL второй страницы
+          .then(response => response.text())
+          .then(data => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, 'text/html');
+            const block2Data = doc.evaluate("/html/body/div/table[2]/tbody/tr/td[2]", doc, null, XPathResult.STRING_TYPE, null);
+            document.getElementById('block2Data').textContent = block2Data.stringValue;
+          });
+
+        // Выполняем запрос XPath для блока 3
+        fetch('https://tesis.xras.ru/sun_flares.html') // Здесь указываете URL третьей страницы
+          .then(response => response.text())
+          .then(data => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, 'text/html');
+            const block3Data = doc.evaluate("/html/body/div/table[2]/tbody/tr/td[2]", doc, null, XPathResult.STRING_TYPE, null);
+            document.getElementById('block3Data').textContent = block3Data.stringValue;
+          });
+      }
+
+      // Вызываем функцию обновления блоков при загрузке страницы
+      updateBlocks();
+    });
+  </script>
+</head>
+<body>
+  <div id="block1">
+    <h2>Блок 1</h2>
+    <p id="block1Data"></p>
+  </div>
+  <div id="block2">
+    <h2>Блок 2</h2>
+    <p id="block2Data"></p>
+  </div>
+  <div id="block3">
+    <h2>Блок 3</h2>
+    <p id="block3Data"></p>
+  </div>
+</body>
+</html>

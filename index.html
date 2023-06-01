@@ -1,39 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Бури и прочие неприятности</title>
+  <title>Пример страницы с использованием XPath</title>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       // Функция для выполнения запроса XPath и обновления содержимого блоков
       function updateBlocks() {
-        // Выполняем запрос XPath для блока 1
-        fetch('https://my-calend.ru/magnitnye-buri/moscow') // Здесь указываете URL первой страницы
-          .then(response => response.text())
-          .then(data => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(data, 'text/html');
-            const block1Data = doc.evaluate("/html/body/div[1]/main/div[1]/article/div[12]", doc, null, XPathResult.STRING_TYPE, null);
-            document.getElementById('block1Data').textContent = block1Data.stringValue;
-          });
+        // Функция для выполнения запроса XPath на указанной странице
+        function fetchData(url, xpath, targetId) {
+          return fetch(url)
+            .then(response => response.text())
+            .then(data => {
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(data, 'text/html');
+              const result = doc.evaluate(xpath, doc, null, XPathResult.STRING_TYPE, null);
+              return result.stringValue;
+            })
+            .then(content => {
+              document.getElementById(targetId).textContent = content;
+            });
+        }
 
-        // Выполняем запрос XPath для блока 2
-        fetch('https://tesis.xras.ru/magnetic_storms.html') // Здесь указываете URL второй страницы
-          .then(response => response.text())
-          .then(data => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(data, 'text/html');
-            const block2Data = doc.evaluate("/html/body/div/table[2]/tbody/tr/td[2]", doc, null, XPathResult.STRING_TYPE, null);
-            document.getElementById('block2Data').textContent = block2Data.stringValue;
-          });
+        // Список асинхронных запросов
+        const requests = [
+          fetchData('https://my-calend.ru/magnitnye-buri/moscow', "/html/body/div[1]/main/div[1]/article/div[12]", 'block1Data'),
+          fetchData('https://tesis.xras.ru/magnetic_storms.html', "/html/body/div/table[2]/tbody/tr/td[2]", 'block2Data'),
+          fetchData('https://tesis.xras.ru/sun_flares.html', "/html/body/div/table[2]/tbody/tr/td[2]", 'block3Data')
+        ];
 
-        // Выполняем запрос XPath для блока 3
-        fetch('https://tesis.xras.ru/sun_flares.html') // Здесь указываете URL третьей страницы
-          .then(response => response.text())
-          .then(data => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(data, 'text/html');
-            const block3Data = doc.evaluate("/html/body/div/table[2]/tbody/tr/td[2]", doc, null, XPathResult.STRING_TYPE, null);
-            document.getElementById('block3Data').textContent = block3Data.stringValue;
+        // Ожидание завершения всех запросов
+        Promise.all(requests)
+          .then(() => {
+            console.log('Обновление блоков завершено.');
+          })
+          .catch(error => {
+            console.log('Произошла ошибка при обновлении блоков:', error);
           });
       }
 

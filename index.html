@@ -13,8 +13,12 @@
             .then(data => {
               const parser = new DOMParser();
               const doc = parser.parseFromString(data, 'text/html');
-              const result = doc.evaluate(xpath, doc, null, XPathResult.STRING_TYPE, null);
-              return result.stringValue;
+              const result = doc.evaluate(xpath, doc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+              const content = [];
+              for (let i = 0; i < result.snapshotLength; i++) {
+                content.push(result.snapshotItem(i).textContent);
+              }
+              return content.join(', ');
             })
             .then(content => {
               document.getElementById(targetId).textContent = content;
@@ -45,7 +49,7 @@
 </head>
 <body>
   <div id="block1">
-    <h2>Блок 1.1</h2>
+    <h2>Блок 1.2</h2>
     <p id="block1Data"></p>
   </div>
   <div id="block2">
